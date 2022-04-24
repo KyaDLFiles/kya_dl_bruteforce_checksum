@@ -91,7 +91,7 @@ int main(int argc, char *argv[]) {
 	if (start_offset > fsize || stop_offset > fsize || start_offset < 0 || stop_offset < 0 || tot_read <= 0 || tot_read > fsize) {
 		fprintf(stderr, "Error: invalid value(s)! Check the arguments\n");
 		if (start_offset > fsize || stop_offset > fsize)
-			fprintf(stderr, "Offset(s) larger than file size");
+			fprintf(stderr, "Offset(s) larger than file size\n");
 		return 4;
 	}
 
