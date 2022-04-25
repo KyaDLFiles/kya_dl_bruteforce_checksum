@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
 		fprintf(stderr, "Missing argument(s)!\n"
 						"bfcsum(.exe) /path/to/save/file.dat <h>known_checksum <--start=<h>start_offset>> <--stop=<h>stop_offset>\n"
 						"Default offsets are the start and the end of the file\n"
-						"Values are read as decimal by default, prepend lowercase \"h\" to have one read as hexadecimal");
+						"Values are read as decimal by default, prepend lowercase \"h\" to have one read as hexadecimal\n");
 		return 1;
 	}
 
