@@ -44,7 +44,7 @@ uint64_t compute_checksum(const void *buffer, int64_t size) {
 
 int main(int argc, char *argv[]) {
 	//Variables definition
-	FILE * fp;
+	FILE *fp;
 	uint8_t *buf;
 	uint32_t csum, known_csum, fsize;
 	int start_offset = 0, stop_offset, tot_read, i, j;
@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
 	fseek(fp, 0, SEEK_SET);
 	stop_offset = (int)fsize;
 
-	//Reset errno and get checksum
+	//Get checksum
 	known_csum = get_argument_value(argv[2]);
 
 	//Read other arguments
