@@ -46,8 +46,8 @@ int main(int argc, char *argv[]) {
 	//Variables definition
 	FILE * fp;
 	uint8_t *buf;
-	uint32_t csum, known_csum, fsize, i, j;
-	int start_offset = 0, stop_offset, tot_read;
+	uint32_t csum, known_csum, fsize;
+	int start_offset = 0, stop_offset, tot_read, i, j;
 	_Bool found = 0;
 
 	//Check file path and hash argument
