@@ -96,7 +96,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	//Allocate buffer and read file
-	buf = (uint8_t*)malloc(tot_read);
+	buf = (uint8_t *)malloc(tot_read);
 	fseek(fp, (long)start_offset, SEEK_SET);
 	fread(buf, tot_read, 1, fp);
 
