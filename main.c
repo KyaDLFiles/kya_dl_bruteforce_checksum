@@ -4,15 +4,15 @@
 #include <string.h>
 #include "crc32.h"
 
-int get_argument_value(char arg[]) {
+long long get_argument_value(char arg[]) {
 	char * endptr;
-	int ret;
+	long long ret;
 
 	if (arg[0] == 'h') {
-		ret = strtol(arg + 1, &endptr, 16);
+		ret = strtoll(arg + 1, &endptr, 16);
 	}
 	else {
-		ret = strtol(arg, &endptr, 10);
+		ret = strtoll(arg, &endptr, 10);
 	}
 
 	//In case of invalid values
@@ -24,20 +24,16 @@ int get_argument_value(char arg[]) {
 
 uint64_t compute_checksum(const void *buffer, int64_t size) {
 	uint64_t result;
-	int64_t v4;
-	uint8_t v5;
-	int64_t v6;
+	int64_t remaining = (int)size - 1, flag;
 
 	result = 0xFFFFFFFFFFFFFFFFLL;
-	v4 = (int)size - 1;
 	if (size) {
 		do {
-			v5 = *(uint8_t *)buffer;
-			v6 = v4;
-			v4 = (int32_t)v4 - 1;
+			flag = remaining;
+			remaining = (int32_t)remaining - 1;
+			result = ((uint32_t)result >> 8) ^ (uint64_t)crc32_tab[(uint8_t)(result ^ *(uint8_t *)buffer)];
 			buffer = (uint8_t *)buffer + 1;
-			result = ((uint32_t)result >> 8) ^ (uint64_t)crc32_tab[(uint8_t)(result ^ v5)];
-		} while ( v6 );
+		} while ( flag );
 	}
 	return result;
 }
@@ -46,8 +42,9 @@ int main(int argc, char *argv[]) {
 	//Variables definition
 	FILE *fp;
 	uint8_t *buf;
-	uint32_t csum, known_csum, fsize;
-	int start_offset = 0, stop_offset, tot_read, i, j;
+	uint32_t csum, fsize;
+	int64_t known_csum;
+	long long start_offset = 0, stop_offset, tot_read, i, j;
 	_Bool found = 0;
 
 	//Check file path and hash argument
@@ -73,6 +70,12 @@ int main(int argc, char *argv[]) {
 
 	//Get checksum
 	known_csum = get_argument_value(argv[2]);
+
+	if (known_csum > 0xFFFFFFFF || known_csum < 0) {
+		fprintf(stderr, "Error: invalid checksum!\n"
+						"Must me a positive int, at most hFFFFFFFF/4294967295");
+		return 5;
+	}
 
 	//Read other arguments
 	for (i = 3; i < argc; i++) {
@@ -104,16 +107,16 @@ int main(int argc, char *argv[]) {
 	for (i = 0; i < tot_read; i++) { //Start from specified value and increase each time
 		if (found) //Exit if previously found
 			break;
-		printf("h%X\n", i + start_offset); //Print current start value to let the user keep track
+		printf("h%llX\n", i + start_offset); //Print current start value to let the user keep track
 		#pragma omp parallel for shared(found)
-		for (j = tot_read - i; j > 0; j--) { //Start from right after i and increase each time
+		for (j = 1; j < tot_read - i; j++) { //Start from right after i and increase each time
 			if (found) //Skip if already found
 				continue;
-			csum = compute_checksum(buf + i, tot_read - i - j); //Calculate checksum buffer[i:-j]
+			csum = compute_checksum(buf + i, j - i); //Calculate checksum buffer[i:-j]
 			if (csum == known_csum) { //Print and skip all the rest if found (omp doesn't like break)
-				printf("Match found for %08X!\n"
-					   "Start: h%02X; stop: h%02X\n",
-					   csum, i + start_offset, stop_offset - j);
+				printf("Match found for %08I32X!\n"
+					   "Start: h%02llX; stop: h%02llX\n",
+					   csum, i + start_offset, start_offset + j);
 				found = 1;
 			}
 		}
