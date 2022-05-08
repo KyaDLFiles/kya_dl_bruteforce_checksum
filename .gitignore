@@ -62,3 +62,7 @@ CMakeLists.txt
 *.dat*
 
 /build
+
+
+#i don't even know
+.vs/
