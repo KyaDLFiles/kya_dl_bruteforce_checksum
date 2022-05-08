@@ -114,9 +114,9 @@ int main(int argc, char *argv[]) {
 				continue;
 			csum = compute_checksum(buf + i, j - i); //Calculate checksum buffer[i:-j]
 			if (csum == known_csum) { //Print and skip all the rest if found (omp doesn't like break)
-				printf("Match found for %08I32X!\n"
+				printf("Match found for h%08lX!\n"
 					   "Start: h%02llX; stop: h%02llX\n",
-					   csum, i + start_offset, start_offset + j);
+					   csum, i + start_offset, start_offset + j); //02llX 
 				found = 1;
 			}
 		}
