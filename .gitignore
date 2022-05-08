@@ -66,3 +66,6 @@ CMakeLists.txt
 
 #i don't even know
 .vs/
+SUBSYSTEM
+*.json
+
